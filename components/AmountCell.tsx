@@ -1,5 +1,6 @@
-import {AmountI, Measurement} from '../lib/types';
+import { AmountI } from '../lib/models/amount';
+import Measurement from '../lib/types/measurement';
 
 const AmountCell = (amount: AmountI) => `${amount.value} ${Measurement[amount.measurement]}`;
 
- export default AmountCell;
+export default AmountCell;

@@ -1,3 +1,4 @@
-import { createContext } from "react";
+import { User } from 'firebase/auth';
+import { createGenericContext } from './useGenericContext';
 
-export const UserContext = createContext<{user: any, username: any}>({ user: null, username: null})
+export const [useUserContext, UserContextProvider] = createGenericContext<{ user: User, username: string }>();

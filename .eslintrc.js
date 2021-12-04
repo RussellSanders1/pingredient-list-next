@@ -14,14 +14,16 @@ module.exports = {
     },
     ecmaVersion: 12,
     sourceType: 'module',
+    project: './tsconfig.json'
   },
   plugins: [
     'react',
     '@typescript-eslint',
+    'import',
   ],
   rules: {
     'max-len': 'off',
-    'import/extensions': 'never',
+    'import/extensions': ['warn', 'never'],
     'max-classes-per-file': 'off',
   },
 };

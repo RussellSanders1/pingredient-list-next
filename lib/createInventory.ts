@@ -1,8 +1,9 @@
-import { addDoc, collection } from '@firebase/firestore';
+import { addDoc } from 'firebase/firestore';
 import { getDoc } from 'firebase/firestore';
-import { firestore, db} from './firebase';
+import { db } from './firebase';
 import { createDummyIngredientList } from './helpers';
-import { List, ListType } from './types';
+import List, { ListI } from './models/list';
+import ListType from './types/listType';
 
 export const createInventory = async (uid: string) => {
   const inventory = new List('Inventory', ListType.Inventory, createDummyIngredientList());
@@ -11,5 +12,5 @@ export const createInventory = async (uid: string) => {
   if (!val.exists()) {
     console.error(`Default list not created for user ${uid}`);
   }
-  return val.data() as List;
+  return val.data() as ListI;
 };

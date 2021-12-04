@@ -1,4 +1,4 @@
-import Amount, {AmountI} from "./amount";
+import Amount, { AmountI } from './amount';
 
 export interface IngredientI {
   name: string;

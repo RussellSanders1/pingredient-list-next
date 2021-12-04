@@ -20,7 +20,8 @@
     "next": "12.0.4",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-firebase-hooks": "^4.0.1"
+    "react-firebase-hooks": "^4.0.1",
+    "swr": "^1.1.0"
   },
   "devDependencies": {
     "@types/lodash.debounce": "^4.0.6",
@@ -30,6 +31,7 @@
     "@typescript-eslint/parser": "^5.4.0",
     "eslint": "^8.3.0",
     "eslint-config-airbnb": "^19.0.1",
+    "eslint-config-airbnb-typescript": "^16.1.0",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-react": "^7.27.1",

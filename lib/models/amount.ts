@@ -1,4 +1,4 @@
-import Measurement from "./measurement";
+import Measurement from '../types/measurement';
 
 export interface AmountI {
   value: number;

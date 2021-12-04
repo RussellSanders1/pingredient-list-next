@@ -1,28 +1,37 @@
-import type { NextPage } from 'next';
-import { signInWithPopup } from '@firebase/auth';
-import {
-  doc, getDoc, getDocFromServer, writeBatch,
-} from '@firebase/firestore';
-import {
-  ChangeEventHandler, FormEventHandler, useCallback, useContext, useEffect, useState,
-} from 'react';
+import { signInWithPopup } from 'firebase/auth';
+import { addDoc, collection, doc, getDoc, writeBatch } from 'firebase/firestore';
 import debounce from 'lodash.debounce';
-import { addDoc, collection } from 'firebase/firestore';
-import { UserContext } from '../../lib/context';
-import { List, ListType } from '../../lib/types';
+import type { NextPage } from 'next';
+import React, {
+  ChangeEventHandler, FormEventHandler, useCallback, useEffect, useState,
+} from 'react';
+import { useUserContext } from '../../lib/context';
 import { auth, firestore, googleAuthProvider } from '../../lib/firebase';
 import { createDummyIngredientList } from '../../lib/helpers';
+import List from '../../lib/models/list';
+import ListType from '../../lib/types/listType';
 
-const EnterPage: NextPage = function () {
-  const { user, username } = useContext(UserContext);
+interface MessageProps {
+  username: string;
+  isValid: boolean;
+  loading: boolean;
+}
 
-  return (
-    <main>
-      {user
-        ? !username ? <UsernameForm /> : <SignOutButton />
-        : <SignInButton />}
-    </main>
-  );
+var UsernameMessage = function ({ username, isValid, loading }: MessageProps) {
+  if (loading) {
+    return <p>Checking...</p>;
+  } if (isValid) {
+    return (
+      <p className="text-success">
+        {username}
+        {' '}
+        is available!
+      </p>
+    );
+  } if (username && !isValid) {
+    return <p className="text-danger">That username is taken!</p>;
+  }
+  return <p />;
 };
 
 var SignInButton = function () {
@@ -48,8 +57,21 @@ var UsernameForm = function () {
   const [isValid, setIsValid] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { user, username } = useContext(UserContext);
+  const { user, username } = useUserContext();
 
+  const checkUsername = useCallback(async (usernameValue) => {
+    const call = debounce(async (value: string) => {
+      if (value.length >= 3) {
+        const ref = doc(firestore, 'usernames', value);
+
+        const document = await getDoc(ref);
+        console.log('Firestore read executed!');
+        setIsValid(!document.exists());
+        setLoading(false);
+      }
+    }, 500);
+    await call(usernameValue);
+  }, []);
   useEffect(() => {
     checkUsername(formValue);
   }, [formValue]);
@@ -96,20 +118,6 @@ var UsernameForm = function () {
     }
   };
 
-  const checkUsername = useCallback(async (username) => {
-    const call = debounce(async (username: string) => {
-      if (username.length >= 3) {
-        const ref = doc(firestore, 'usernames', username);
-
-        const document = await getDoc(ref);
-        console.log('Firestore read executed!');
-        setIsValid(!document.exists());
-        setLoading(false);
-      }
-    }, 500);
-    await call(username);
-  }, []);
-
   return (
     <>
       {!username && (
@@ -150,27 +158,16 @@ var UsernameForm = function () {
   );
 };
 
-interface MessageProps {
-    username: string;
-    isValid: boolean;
-    loading: boolean;
-}
+const EnterPage: NextPage = function () {
+  const { user, username } = useUserContext();
 
-var UsernameMessage = function ({ username, isValid, loading }: MessageProps) {
-  if (loading) {
-    return <p>Checking...</p>;
-  } if (isValid) {
-    return (
-      <p className="text-success">
-        {username}
-        {' '}
-        is available!
-      </p>
-    );
-  } if (username && !isValid) {
-    return <p className="text-danger">That username is taken!</p>;
-  }
-  return <p />;
+  return (
+    <main>
+      {user
+        ? !username ? <UsernameForm /> : <SignOutButton />
+        : <SignInButton />}
+    </main>
+  );
 };
 
 export default EnterPage;

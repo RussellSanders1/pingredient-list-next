@@ -1,10 +1,5 @@
-import {IngredientI} from "./ingredient";
-
-export enum ListType {
-  Inventory,
-  Shopping,
-  Recipe
-}
+import { IngredientI } from './ingredient';
+import { ListType } from '../types/listType';
 
 export interface ListI {
   name: string;

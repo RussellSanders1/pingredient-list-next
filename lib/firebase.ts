@@ -1,10 +1,11 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAnalytics } from 'firebase/analytics';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, User } from 'firebase/auth';
 import { collection, getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { converter } from './helpers';
+import { UsernameI } from './models/username';
+import { ListI } from './models/list';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -37,7 +38,7 @@ export const storage = getStorage(app);
 export const dataPoint = <T>(collectionPath: string) => collection(firestore, collectionPath).withConverter(converter<T>());
 
 export const db = {
-  users: dataPoint('users'),
-  usernames: dataPoint('usernames'),
-  userLists: (userId: string) => dataPoint(`users/${userId}/lists`),
+  users: dataPoint<User>('users'),
+  usernames: dataPoint<UsernameI>('usernames'),
+  userLists: (userId: string) => dataPoint<ListI>(`users/${userId}/lists`),
 };

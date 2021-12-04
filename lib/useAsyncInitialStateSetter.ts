@@ -1,16 +1,17 @@
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 export default function useAsyncInitialStateSetter<T>(
   asyncCallback: () => Promise<T>,
-  stateSetter: Dispatch<SetStateAction<T | null>>,
-) {
+): [T, Dispatch<SetStateAction<T>>] {
+  const [value, setValue] = useState<T>();
+
   useEffect(() => {
     let mounted = true;
     const get = async () => {
-      const value = await asyncCallback();
+      const val = await asyncCallback();
 
       if (mounted) {
-        stateSetter(value);
+        setValue(val);
       }
     };
 
@@ -18,5 +19,7 @@ export default function useAsyncInitialStateSetter<T>(
     return () => {
       mounted = false;
     };
-  }, [asyncCallback, stateSetter]);
+  }, []);
+
+  return [value as T, setValue as Dispatch<SetStateAction<T>>];
 }
