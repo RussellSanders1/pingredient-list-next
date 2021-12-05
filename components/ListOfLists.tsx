@@ -1,26 +1,22 @@
-import { query, where, getDocs } from 'firebase/firestore';
-import { useUserContext } from '../lib/context';
-import { db } from '../lib/firebase';
+import React from 'react';
+import { getUserLists } from '../lib/helpers';
 import ListType from '../lib/types/listType';
 import useAsyncInitialStateSetter from '../lib/useAsyncInitialStateSetter';
-import React from 'react';
+import useAuthContext from '../lib/useAuthContext';
 
 interface ListOfListsProps {
   listType: ListType
 }
 const ListOfLists = ({ listType }: ListOfListsProps) => {
-  const { user } = useUserContext();
+  const { user } = useAuthContext();
+  if (!user){
+    return null;
+  }
   
-  const getLists = async () => {
-    const inventoryQuery = query(db.userLists(user.uid), where('type', '==', listType));
-    const results = await getDocs(inventoryQuery);
-    
-    return results.docs.map(res => res.data());
-  };
-  const [lists, setLists] = useAsyncInitialStateSetter(getLists);
+  const [lists, loading] = useAsyncInitialStateSetter(() => getUserLists(user!.uid, listType));
   
-  if (!lists) {
-    return <p>Loading inventory...</p>;
+  if (loading) {
+    return <p>Loading lists...</p>;
   }
 
   return (

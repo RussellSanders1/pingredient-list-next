@@ -6,6 +6,7 @@ import ListOfLists from '../../components/ListOfLists';
 import ListType from '../../lib/types/listType';
 import React from 'react';
 
-const Recipes = () => (<ListOfLists listType={ListType.Recipe} />);
+const Recipes = () => (<ListOfLists listType={ListType.Recipe}/>);
+
 
 export default Recipes;

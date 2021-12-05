@@ -6,6 +6,6 @@ import ListType from '../../lib/types/listType';
 import React from 'react';
 
 // minus those that are in stock
-const ShoppingList = () => (<ListOfLists listType={ListType.Shopping}/>);
+const ShoppingLists = () => (<ListOfLists listType={ListType.Shopping}/>);
 
-export default ShoppingList;
+export default ShoppingLists;

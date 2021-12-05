@@ -6,7 +6,7 @@ import React from 'react';
 import ListOfLists from '../../components/ListOfLists';
 import ListType from '../../lib/types/listType';
 
+const Inventories = () => (<ListOfLists listType={ListType.Inventory}/>);
 
-export default function Inventory() {
-  return <ListOfLists listType={ListType.Inventory}/>;
-}
+export default Inventories;
+

@@ -13,5 +13,5 @@ export const createGenericContext = <T extends unknown>() => {
     return contextIsDefined;
   };
 
-  return [useGenericContext, genericContext.Provider] as const;
+  return [useGenericContext, genericContext] as const;
 };

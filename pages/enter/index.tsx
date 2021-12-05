@@ -1,15 +1,15 @@
 import { signInWithPopup } from 'firebase/auth';
-import { addDoc, collection, doc, getDoc, writeBatch } from 'firebase/firestore';
+import { addDoc, doc, getDoc, writeBatch } from 'firebase/firestore';
 import debounce from 'lodash.debounce';
 import type { NextPage } from 'next';
 import React, {
   ChangeEventHandler, FormEventHandler, useCallback, useEffect, useState,
 } from 'react';
-import { useUserContext } from '../../lib/context';
-import { auth, firestore, googleAuthProvider } from '../../lib/firebase';
+import { auth, db, firestore, googleAuthProvider } from '../../lib/firebase';
 import { createDummyIngredientList } from '../../lib/helpers';
 import List from '../../lib/models/list';
 import ListType from '../../lib/types/listType';
+import { useAuthContext } from '../../lib/useAuthContext';
 
 interface MessageProps {
   username: string;
@@ -56,8 +56,7 @@ var UsernameForm = function () {
   const [formValue, setFormValue] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const { user, username } = useUserContext();
+  const { user, username } = useAuthContext();
 
   const checkUsername = useCallback(async (usernameValue) => {
     const call = debounce(async (value: string) => {
@@ -80,22 +79,23 @@ var UsernameForm = function () {
     e.preventDefault();
 
     // Create refs for both documents
-    const userDoc = doc(firestore, 'users', user.uid);
+    const currentUser = user!;
+    const userDoc = doc(firestore, 'users', currentUser.uid);
     const usernameDoc = doc(firestore, 'usernames', formValue);
     const inventory = new List('Inventory', ListType.Inventory, createDummyIngredientList());
     // Commit both docs together as a batch write.
     const batch = writeBatch(firestore);
     batch.set(userDoc, {
       username: formValue,
-      photoURL: user.photoURL,
-      displayName: user.displayName,
+      photoURL: currentUser.photoURL,
+      displayName: user!.displayName,
     });
-    batch.set(usernameDoc, { uid: user.uid });
+    batch.set(usernameDoc, { uid: currentUser.uid });
     await batch.commit();
 
-    const inventoryDoc = await addDoc(collection(firestore, `users/${user.uid}/lists`), { ...inventory });
+    const inventoryDoc = await addDoc(db.userLists(currentUser.uid), inventory);
     if (!(await getDoc(inventoryDoc)).exists()) {
-      console.error(`Default list not created for user ${user.uid}`);
+      console.error(`Default list not created for user ${currentUser.uid}`);
     }
   };
 
@@ -159,7 +159,7 @@ var UsernameForm = function () {
 };
 
 const EnterPage: NextPage = function () {
-  const { user, username } = useUserContext();
+  const { user, username } = useAuthContext();
 
   return (
     <main>
